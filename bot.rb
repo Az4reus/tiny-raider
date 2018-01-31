@@ -35,7 +35,7 @@ end
 params = { token: TOKEN, prefix: '!' }
 bot = Discordrb::Commands::CommandBot.new(params)
 
-bot.command :info do |event, args|
+bot.command :io do |event, args|
   char, server, = args.split '-'
   begin
     res = get_character_info(char, server, 'us').body
