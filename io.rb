@@ -1,6 +1,12 @@
 require 'net/http'
 require 'json'
 
+RAIDER_IO_ROOT = 'https://raider.io/api/v1/'.freeze
+DESIRED_RIO_FIELDS = 'mythic_plus_scores,'\
+    'gear,'\
+    'guild,'\
+    'mythic_plus_recent_runs'.freeze
+
 def get_raider_io_path(path, params)
   uri = URI(RAIDER_IO_ROOT + path)
   uri.query = URI.encode_www_form params
