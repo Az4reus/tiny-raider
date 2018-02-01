@@ -4,15 +4,23 @@ require 'discordrb'
 module RaiderIOModule
   extend Discordrb::Commands::CommandContainer
 
+  @logger = Discordrb::Logger.new(true)
+
   command :io do |event, args|
-    puts "got query for #{args}"
     char, server, = args.split '-'
 
-    res = get_character_info(char, server, 'us')
-    return print_bad_request(event, res) if res.code == 400
+    if char.nil? || server.nil?
+      @logger.warn "Caught bad user request: #{args}"
+      return event.respond('Format is Char-Server, pretty please.')
+    end
 
-    res = JSON.parse res.body
+    resp = get_character_info(char, server, 'us')
+    return print_bad_request(event, resp) if resp.code == '400'
+
+    res = JSON.parse resp.body
       
+    @logger.info "Good User Request for #{args}"
+
     event << "Overview for: #{res['name']}-#{res['realm']}"\
         " | Guild: #{res['guild']['name']}"
     event << "M+ Score: #{res['mythic_plus_scores']['all']}"
@@ -21,7 +29,9 @@ module RaiderIOModule
     event << "Check the raider.io page: #{res['profile_url']}"
   end
 
-  def print_bad_request(event, http_response)
-    event.respond("Bad request: #{http_response.body}")
+  def self.print_bad_request(event, http_response)
+    body = JSON.parse http_response.body
+    @logger.info "Caught raider.io bad Request: #{body}"
+    event.respond("Bad request: #{body['message']}")
   end
 end
