@@ -4,8 +4,10 @@ require 'discordrb'
 module RaiderIOModule
   extend Discordrb::Commands::CommandContainer
 
-  @logger = Discordrb::Logger.new(true)
+  @logger = Discordrb::Logger.new(false)
 
+  # Queries raider IO to specified char. Currently specialised to US region.
+  # Needs to be improved with better display, ideally an embed frame.
   command :io do |event, args|
     char, server, = args.split '-'
 
@@ -18,7 +20,6 @@ module RaiderIOModule
     return print_bad_request(event, resp) if resp.code == '400'
 
     res = JSON.parse resp.body
-      
     @logger.info "Good User Request for #{args}"
 
     event << "Overview for: #{res['name']}-#{res['realm']}"\
@@ -33,5 +34,22 @@ module RaiderIOModule
     body = JSON.parse http_response.body
     @logger.info "Caught raider.io bad Request: #{body}"
     event.respond("Bad request: #{body['message']}")
+  end
+
+  command :affixes do |event|
+    resp = query_affixes
+    body = JSON.parse resp.body
+
+    if resp.code != '200'
+      @logger.info "Raider.IO having some problems: #{body}"
+      event.respond "Raider.io says no: #{body['message']}"
+    end
+
+    @logger.info "Responded to affix query to #{event.author.nick}"
+    body['affix_details'].each do |affix|
+      event << "**#{affix['name']}**: #{affix['description']}"
+    end
+
+    return event
   end
 end

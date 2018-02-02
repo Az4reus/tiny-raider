@@ -24,3 +24,10 @@ def get_character_info(character_name, realm, region)
   }
   get_raider_io_path('characters/profile', req_params)
 end
+
+def query_affixes
+  req_params = { region: 'us' }
+  uri = URI(RAIDER_IO_ROOT + 'mythic-plus/affixes')
+  uri.query = URI.encode_www_form req_params
+  Net::HTTP.get_response(uri)
+end
