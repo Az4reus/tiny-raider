@@ -35,21 +35,4 @@ module RaiderIOModule
     @logger.info "Caught raider.io bad Request: #{body}"
     event.respond("Bad request: #{body['message']}")
   end
-
-  command :affixes do |event|
-    resp = query_affixes
-    body = JSON.parse resp.body
-
-    if resp.code != '200'
-      @logger.info "Raider.IO having some problems: #{body}"
-      event.respond "Raider.io says no: #{body['message']}"
-    end
-
-    @logger.info "Responded to affix query to #{event.author.nick}"
-    body['affix_details'].each do |affix|
-      event << "**#{affix['name']}**: #{affix['description']}"
-    end
-
-    return event
-  end
 end
