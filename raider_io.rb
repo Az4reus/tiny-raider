@@ -42,7 +42,7 @@ module RaiderIOModule
       e.thumbnail = thumb
       e.footer = footer
       e.add_field(name: 'M+ Score',
-                  value: "**_#{r['mythic_plus_scores']['all']}_**",
+                  value: "**__#{r['mythic_plus_scores']['all']}__**",
                   inline: true)
       e.add_field(name: 'Gear',
                   value: "#{r['gear']['item_level_equipped']}/#{r['gear']['item_level_total']}",
