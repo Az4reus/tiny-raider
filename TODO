@@ -1,4 +1,2 @@
-- Fix atrocious error handling
 - Add some tests to make sure this thing has at least some soundness
-- Replace output with embed object to make it nice and pretty
 - Make it do a bit more than just char lookups.

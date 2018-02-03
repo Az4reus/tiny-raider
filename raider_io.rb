@@ -20,19 +20,35 @@ module RaiderIOModule
     return print_bad_request(event, resp) if resp.code == '400'
 
     res = JSON.parse resp.body
-    @logger.info "Good User Request for #{args}"
 
-    event << "Overview for: #{res['name']}-#{res['realm']}"\
-        " | Guild: #{res['guild']['name']}"
-    event << "M+ Score: #{res['mythic_plus_scores']['all']}"
-    event << "Gear Equipped: #{res['gear']['item_level_equipped']} /"\
-        " Gear Total: #{res['gear']['item_level_total']}"
-    event << "Check the raider.io page: #{res['profile_url']}"
+    @logger.info "Good User Request for #{args}"
+    character_information_embed(res, event)
   end
 
   def self.print_bad_request(event, http_response)
     body = JSON.parse http_response.body
     @logger.info "Caught raider.io bad Request: #{body}"
     event.respond("Bad request: #{body['message']}")
+  end
+
+  def self.character_information_embed(raider_http_response, event)
+    r = raider_http_response
+    footer = Discordrb::Webhooks::EmbedFooter.new(text: 'Made by Az :3')
+    thumb  = Discordrb::Webhooks::EmbedThumbnail.new(url: r['thumbnail_url'])
+
+    event.channel.send_embed do |e|
+      e.title = "#{r['name']}-#{r['realm']}"
+      e.color = 3_447_001
+      e.thumbnail = thumb
+      e.footer = footer
+      e.add_field(name: 'M+ Score',
+                  value: "**_#{r['mythic_plus_scores']['all']}_**",
+                  inline: true)
+      e.add_field(name: 'Gear',
+                  value: "#{r['gear']['item_level_equipped']}/#{r['gear']['item_level_total']}",
+                  inline: true)
+      e.add_field(name: 'Guild', value: r['guild']['name'], inline: true)
+      e.description = "[Read more at raider.io](#{r['profile_url']})"
+    end
   end
 end
