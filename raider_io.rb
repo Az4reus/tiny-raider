@@ -54,12 +54,12 @@ module RaiderIOModule
 
     rescue Discordrb::Errors::NoPermission => _
       @logger.warn 'No permission to send embed, sending fallback'
-      event << "Overview for: #{res['name']}-#{res['realm']}" \
-               " | Guild: #{res['guild']['name']}"
-      event << "M+ Score: #{res['mythic_plus_scores']['all']}"
-      event << "Gear Equipped: #{res['gear']['item_level_equipped']} /" \
-               " Gear Total: #{res['gear']['item_level_total']}"
-      event << "Check the raider.io page: #{res['profile_url']}"
+      event << "Overview for: #{r['name']}-#{r['realm']}" \
+               " | Guild: #{r['guild']['name']}"
+      event << "M+ Score: #{r['mythic_plus_scores']['all']}"
+      event << "Gear Equipped: #{r['gear']['item_level_equipped']} /" \
+               " Gear Total: #{r['gear']['item_level_total']}"
+      event << "Check the raider.io page: #{r['profile_url']}"
     end
   end
 end
