@@ -30,9 +30,9 @@ module RaiderIOModule
     event.respond("Bad request: #{body['message']}")
   end
 
-  def self.character_information_embed(raider_http_response, event)
-    r = raider_http_response
-    footer = Discordrb::Webhooks::EmbedFooter.new(text: "Requested by #{event.author.display_name}")
+  def self.character_information_embed(r, event)
+    nick = event.authr.display.name
+    footer = Discordrb::Webhooks::EmbedFooter.new(text: "Requested by #{nick}")
     thumb = Discordrb::Webhooks::EmbedThumbnail.new(url: r['thumbnail_url'])
 
     begin
@@ -51,15 +51,18 @@ module RaiderIOModule
         e.add_field(name: 'Guild', value: r['guild']['name'], inline: true)
         e.description = "[Read more at raider.io](#{r['profile_url']})"
       end
-
     rescue Discordrb::Errors::NoPermission => _
       @logger.warn 'No permission to send embed, sending fallback'
-      event << "Overview for: #{r['name']}-#{r['realm']}" \
-               " | Guild: #{r['guild']['name']}"
-      event << "M+ Score: #{r['mythic_plus_scores']['all']}"
-      event << "Gear Equipped: #{r['gear']['item_level_equipped']} /" \
-               " Gear Total: #{r['gear']['item_level_total']}"
-      event << "Check the raider.io page: #{r['profile_url']}"
+      send_char_info_fallback(r, event)
     end
+  end
+
+  def send_char_info_fallback(r, event)
+    event << "Overview for: #{r['name']}-#{r['realm']}" \
+             " | Guild: #{r['guild']['name']}"
+    event << "M+ Score: #{r['mythic_plus_scores']['all']}"
+    event << "Gear Equipped: #{r['gear']['item_level_equipped']} /" \
+             " Gear Total: #{r['gear']['item_level_total']}"
+    event << "Check the raider.io page: #{r['profile_url']}"
   end
 end
