@@ -7,7 +7,6 @@ module RaiderIOModule
   @logger = Discordrb::Logger.new(false)
 
   # Queries raider IO to specified char. Currently specialised to US region.
-  # Needs to be improved with better display, ideally an embed frame.
   command :io do |event, args|
     char, server, = args.split '-'
 
@@ -33,22 +32,34 @@ module RaiderIOModule
 
   def self.character_information_embed(raider_http_response, event)
     r = raider_http_response
-    footer = Discordrb::Webhooks::EmbedFooter.new(text: 'Made by Az :3')
-    thumb  = Discordrb::Webhooks::EmbedThumbnail.new(url: r['thumbnail_url'])
+    footer = Discordrb::Webhooks::EmbedFooter.new(text: "Requested by #{event.author.display_name}")
+    thumb = Discordrb::Webhooks::EmbedThumbnail.new(url: r['thumbnail_url'])
 
-    event.channel.send_embed do |e|
-      e.title = "#{r['name']}-#{r['realm']}"
-      e.color = 3_447_001
-      e.thumbnail = thumb
-      e.footer = footer
-      e.add_field(name: 'M+ Score',
-                  value: "**__#{r['mythic_plus_scores']['all']}__**",
-                  inline: true)
-      e.add_field(name: 'Gear',
-                  value: "#{r['gear']['item_level_equipped']}/#{r['gear']['item_level_total']}",
-                  inline: true)
-      e.add_field(name: 'Guild', value: r['guild']['name'], inline: true)
-      e.description = "[Read more at raider.io](#{r['profile_url']})"
+    begin
+      event.channel.send_embed do |e|
+        e.title = "#{r['name']}-#{r['realm']}"
+        e.color = 3_447_001
+        e.thumbnail = thumb
+        e.footer = footer
+        e.add_field(name: 'M+ Score',
+                    value: "**__#{r['mythic_plus_scores']['all']}__**",
+                    inline: true)
+        e.add_field(name: 'Gear',
+                    value: "#{r['gear']['item_level_equipped']}/"\
+                           "#{r['gear']['item_level_total']}",
+                    inline: true)
+        e.add_field(name: 'Guild', value: r['guild']['name'], inline: true)
+        e.description = "[Read more at raider.io](#{r['profile_url']})"
+      end
+
+    rescue Discordrb::Errors::NoPermission => _
+      @logger.warn 'No permission to send embed, sending fallback'
+      event << "Overview for: #{res['name']}-#{res['realm']}" \
+               " | Guild: #{res['guild']['name']}"
+      event << "M+ Score: #{res['mythic_plus_scores']['all']}"
+      event << "Gear Equipped: #{res['gear']['item_level_equipped']} /" \
+               " Gear Total: #{res['gear']['item_level_total']}"
+      event << "Check the raider.io page: #{res['profile_url']}"
     end
   end
 end
