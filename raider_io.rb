@@ -31,7 +31,7 @@ module RaiderIOModule
   end
 
   def self.character_information_embed(r, event)
-    nick = event.authr.display.name
+    nick = event.author.display_name
     footer = Discordrb::Webhooks::EmbedFooter.new(text: "Requested by #{nick}")
     thumb = Discordrb::Webhooks::EmbedThumbnail.new(url: r['thumbnail_url'])
 
