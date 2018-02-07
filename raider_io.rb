@@ -57,7 +57,7 @@ module RaiderIOModule
     end
   end
 
-  def send_char_info_fallback(r, event)
+  def self.send_char_info_fallback(r, event)
     event << "Overview for: #{r['name']}-#{r['realm']}" \
              " | Guild: #{r['guild']['name']}"
     event << "M+ Score: #{r['mythic_plus_scores']['all']}"
