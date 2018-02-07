@@ -30,34 +30,41 @@ module RaiderIOModule
     event.respond("Bad request: #{body['message']}")
   end
 
+  # Generate response to !io, with a plain-text fallback for servers
+  # who can't sort out their bot permissions.
   def self.character_information_embed(r, event)
+    char_info_embed(r, event)
+  rescue Discordrb::Errors::NoPermission => _
+    @logger.warn 'No permission to send embed, sending fallback'
+    char_info_fallback(r, event)
+  end
+
+  # The intended output, this sends a fancy embed to the channel.
+  def self.char_info_embed(r, event)
     nick = event.author.display_name
     footer = Discordrb::Webhooks::EmbedFooter.new(text: "Requested by #{nick}")
     thumb = Discordrb::Webhooks::EmbedThumbnail.new(url: r['thumbnail_url'])
 
-    begin
-      event.channel.send_embed do |e|
-        e.title = "#{r['name']}-#{r['realm']}"
-        e.color = 3_447_001
-        e.thumbnail = thumb
-        e.footer = footer
-        e.add_field(name: 'M+ Score',
-                    value: "**__#{r['mythic_plus_scores']['all']}__**",
-                    inline: true)
-        e.add_field(name: 'Gear',
-                    value: "#{r['gear']['item_level_equipped']}/"\
-                           "#{r['gear']['item_level_total']}",
-                    inline: true)
-        e.add_field(name: 'Guild', value: r['guild']['name'], inline: true)
-        e.description = "[Read more at raider.io](#{r['profile_url']})"
-      end
-    rescue Discordrb::Errors::NoPermission => _
-      @logger.warn 'No permission to send embed, sending fallback'
-      send_char_info_fallback(r, event)
+    event.channel.send_embed do |e|
+      e.title = "#{r['name']}-#{r['realm']}"
+      e.color = 3_447_001
+      e.thumbnail = thumb
+      e.footer = footer
+      e.add_field(name: 'M+ Score',
+                  value: "**__#{r['mythic_plus_scores']['all']}__**",
+                  inline: true)
+      e.add_field(name: 'Gear',
+                  value: "#{r['gear']['item_level_equipped']}/"\
+                         "#{r['gear']['item_level_total']}",
+                  inline: true)
+      e.add_field(name: 'Guild', value: r['guild']['name'], inline: true)
+      e.description = "[Read more at raider.io](#{r['profile_url']})"
     end
   end
 
-  def self.send_char_info_fallback(r, event)
+  # If we can't send embeds because we lack permissions,
+  # send a plain test version instead.
+  def self.char_info_fallback(r, event)
     event << "Overview for: #{r['name']}-#{r['realm']}" \
              " | Guild: #{r['guild']['name']}"
     event << "M+ Score: #{r['mythic_plus_scores']['all']}"
