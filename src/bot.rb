@@ -4,9 +4,8 @@ require 'json'
 require_relative './raider_io'
 require_relative './io'
 
-
 if ARGV[0].nil?
-  p 'No Token specified!'
+  puts 'No Token specified!'
   exit 1
 end
 TOKEN = ARGV[0]
