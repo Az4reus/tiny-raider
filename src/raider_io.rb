@@ -6,6 +6,12 @@ module RaiderIOModule
 
   @logger = Discordrb::Logger.new(false)
 
+  command :iohelp do |event|
+    event << 'Request a char from any server with `!io char-server`!'
+    event << 'Need help? features? Fixes? Tell one on github: '
+    event << 'https://github.com/Az4reus/tiny-raider'
+  end
+
   # Queries raider IO to specified char. Currently specialised to US region.
   command :io do |event, args|
     char, server, = args.split '-'
