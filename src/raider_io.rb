@@ -8,7 +8,7 @@ module RaiderIOModule
 
   command :iohelp do |event|
     event << 'Request a char from any server with `!io char-server`!'
-    event << 'Need help? features? Fixes? Tell one on github: '
+    event << 'Need help? features? Fixes? Tell me on github: '
     event << 'https://github.com/Az4reus/tiny-raider'
   end
 
