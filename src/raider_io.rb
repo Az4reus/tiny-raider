@@ -44,6 +44,7 @@ module RaiderIOModule
     nick = event.author.display_name
     footer = Discordrb::Webhooks::EmbedFooter.new(text: "Requested by #{nick}")
     thumb = Discordrb::Webhooks::EmbedThumbnail.new(url: r['thumbnail_url'])
+    sco = r['mythic_plus_sco']
 
     event.channel.send_embed do |e|
       e.title = "#{r['name']}-#{r['realm']}"
@@ -51,7 +52,10 @@ module RaiderIOModule
       e.thumbnail = thumb
       e.footer = footer
       e.add_field(name: 'M+ Score',
-                  value: "**__#{r['mythic_plus_scores']['all']}__**",
+                  value: "**__#{sco['all']}__**",
+                  inline: true)
+      e.add_field(name: 'Healer/Tank/DPS',
+                  value: "#{sco['healer']}/#{sco['tank']}/#{sco['dps']}",
                   inline: true)
       e.add_field(name: 'Gear',
                   value: "#{r['gear']['item_level_equipped']}/"\

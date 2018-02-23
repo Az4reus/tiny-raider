@@ -10,9 +10,10 @@ if ARGV[0].nil?
 end
 TOKEN = ARGV[0]
 
-params = { token: TOKEN, prefix: '!' }
+params = { token: TOKEN, prefix: '!', client_id: '408309519110897665'}
 bot = Discordrb::Commands::CommandBot.new(params)
 
 bot.include! RaiderIOModule
 
+puts bot.invite_url
 bot.run
