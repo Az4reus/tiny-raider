@@ -44,7 +44,7 @@ module RaiderIOModule
     nick = event.author.display_name
     footer = Discordrb::Webhooks::EmbedFooter.new(text: "Requested by #{nick}")
     thumb = Discordrb::Webhooks::EmbedThumbnail.new(url: r['thumbnail_url'])
-    sco = r['mythic_plus_sco']
+    sco = r['mythic_plus_scores']
 
     event.channel.send_embed do |e|
       e.title = "#{r['name']}-#{r['realm']}"
