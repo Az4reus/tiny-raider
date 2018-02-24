@@ -16,10 +16,12 @@ module RaiderIOModule
   command :io do |event, args|
     char, server, = args.split '-'
 
-    if char.nil? || server.nil?
+    if char.nil?
       @logger.warn "Caught bad user request: #{args}"
-      return event.respond('Format is Char-Server, pretty please.')
+      return event.respond('Format is Char[-Server], pretty please.')
     end
+
+    server = 'thrall' if server.nil?
 
     resp = get_character_info(char, server, 'us')
     return print_bad_request(event, resp) if resp.code == '400'
