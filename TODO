@@ -1,2 +1,5 @@
-- Add some tests to make sure this thing has at least some soundness
 - Make it do a bit more than just char lookups.
+- Create "Highscore board"
+  - Register any looked-up char to a table by guild, for an optional leader board
+  - Create a cronjob that requeries all elements of a leaderboard every 24h
+  - Post Leaderboard on demand or per 24h with a 7d delta
